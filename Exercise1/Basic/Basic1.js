@@ -12,13 +12,13 @@ function drawPixelwiseCircle(canvas) {
         var row = i / 4 / 200;
         var col = i / 4 % 200;
         var dis = Math.sqrt(Math.pow(row - 100, 2) + Math.pow(col - 100,2))
-        if(dis < radius){
+        if (dis < radius) {
 	        img.data[i] = 0;
-		    img.data[i + 1] = 255;
-		    img.data[i + 2] = 0;
-		    img.data[i + 3] = 255; //transparence
+		img.data[i + 1] = 255;
+		img.data[i + 2] = 0;
+		img.data[i + 3] = 255; //transparence
         }
-	}
+    }
     context.putImageData(img, 0, 0);
 }
 
