@@ -35,19 +35,19 @@ function drawContourCircle(canvas) {
         var col = i / 4 % 200;
         var dis = Math.sqrt(Math.pow(row - 100, 2) + Math.pow(col - 100,2))
 
-        if(dis < radius){
+        if (dis < radius) {
             img.data[i] = 0;
 		    img.data[i + 1] = 255;
             img.data[i + 2] = 0;
             img.data[i + 3] = 255;
-        }else if( dis < radius + contour){
+        } else if (dis < radius + contour) {
             img.data[i] = 0;
 		    img.data[i + 1] = 127;
             img.data[i + 2] = 0;
             img.data[i + 3] = 255;
 
         }
-	}
+    }
     context.putImageData(img, 0, 0);
 }
 
@@ -64,31 +64,29 @@ function drawSmoothCircle(canvas) {
         var row = i / 4 / 200;
         var col = i / 4 % 200;
         var dis = Math.sqrt(Math.pow(row - 100, 2) + Math.pow(col - 100,2))
-        if(dis < radius){
+        if (dis < radius) {
             img.data[i] = 0;
 		    img.data[i + 1] = 255;
             img.data[i + 2] = 0;
 		    img.data[i + 3] = 255;
-        }else if (dis < radius + padding){
+        } else if (dis < radius + padding) {
             var mix = 255 - ((dis - radius) * (255 - 127));
             img.data[i ] = 0;
 		    img.data[i + 1] = mix;
             img.data[i + 2] = 0;
 		    img.data[i + 3] = 255;
-        }
-        else if( dis < radius + contour){
+        } else if (dis < radius + contour) {
             img.data[i ] = 0;
 		    img.data[i + 1] = 127;
             img.data[i + 2] = 0;
 		    img.data[i + 3] = 255;
-        }
-        else if (dis < radius + contour + padding){
+        } else if (dis < radius + contour + padding) {
             var mix = (1 - (dis - (radius + contour))) * 255;
             img.data[i ] = 0;
 		    img.data[i + 1] = 127;
             img.data[i + 2] = 0;
 		    img.data[i + 3] = mix;
         }
-	}
+    }
     context.putImageData(img, 0, 0);
 }
