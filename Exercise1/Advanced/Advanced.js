@@ -306,7 +306,7 @@ function setupMandelbrot(canvas) {
 
     // TODO 1.4c):      Uncomment the following line to enable zooming.
 
-    // canvas.addEventListener('DOMMouseScroll', onMouseWheel, false);
+    canvas.addEventListener('DOMMouseScroll', onMouseWheel, false);
 
 }
 
@@ -351,6 +351,8 @@ function onMouseDown(e) {
         //                  start the dragging process. Use the global
         //                  variables dragging (bool) and lastPoint (two
         //                  dimensional vector).
+        dragging = true;
+        lastPoint = [x,y]
 
 
     }
@@ -380,7 +382,10 @@ function onMouseMove(e) {
         //                  the global variable center which is used to
         //                  compute the complex number corresponding to a pixel.
 
-
+        let lastC = new ComplexNumberFromCoords(lastPoint[0], lastPoint[1], 'mandelbrot_canvas');
+        let newC = new ComplexNumberFromCoords(x, y, 'mandelbrot_canvas');
+        let dis = sub(lastC, newC);
+        center = dis;
 
         // rerender image
         RenderMandelbrotSet();
@@ -390,7 +395,7 @@ function onMouseMove(e) {
 function onMouseUp(e) {
     // TODO 1.4c):      Prevent dragging of the plane once the mouse is
     //                  not pressed anymore.
-
+    dragging = false;
 
 }
 
