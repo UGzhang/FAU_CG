@@ -64,13 +64,13 @@ function countIterations(start_z, c, max_iter) {
     //                  banding. 
 
     let z = start_z;
-    for (let i = 0; i < max_iter; ++i){
-        z = f_c(z,c);
-        if (abs(z) > 2) return i + 1 - Math.log(Math.log(abs(z)) / Math.log(2));
-        // if (abs(z) > 2 ) return i ;
+    let iter = 0;
+    while(abs(z) <= 2){
+        z = f_c(z, c);
+        if(++iter >= max_iter) break;
     }
-    return max_iter;
-
+    if((iter == max_iter)) return iter;
+    return iter + 1 - (Math.log(Math.log(abs(z)))/Math.log(2))
 }
 
 
@@ -129,12 +129,14 @@ function getColorForIter(iter) {
         //                  red, yellow and green back to cyan (for lots of
         //                  needed iterations). Use the HSV model and convert
         //                  HSV to RGB colors using function hsv2rgb.
-        let temp = 359 - (iter / max_iter) * 359;
+
+        let temp = 180 + (360 *(iter / max_iter));
+
+        if(temp >= 360) {
+          temp %= 360;
+        }
 
         let hsv = hsv2rgb([temp, 1.0, 1.0]);
-        var t = hsv[0];
-        hsv[0] = hsv[2];
-        hsv[2] = t;
 
         return iter == max_iter ? [0, 0, 0] : hsv;
 
@@ -188,13 +190,14 @@ function mandelbrotSet(image) {
         let pixel = i / 4;
         let x = pixel % image.width;
         let y = image.height - pixel / image.width;
-        let c = new ComplexNumberFromCoords(x, y, 'mandelbrot_canvas');
 
         // TODO 1.4a):      Replace the following line by creation of the
         //                  Mandelbrot set. Use functions countIterations() 
         //                  and getColorForIter().
         
         let startZ = new ComplexNumber(0,0);
+        let c = new ComplexNumberFromCoords(x, y, 'mandelbrot_canvas');
+
         let iter = countIterations(startZ, c, max_iter);
         let rgb = getColorForIter(iter);
 
