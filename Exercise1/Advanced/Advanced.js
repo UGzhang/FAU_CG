@@ -215,8 +215,11 @@ function juliaSet(image) {
         //                  Julia set for c = juliaC (global variable). Use
         //                  functions ComplexNumberFromCoords(),
         //                  countIterations() and getColorForIter().
-
-        let rgb = [128, 128, 128];
+        let z = new ComplexNumberFromCoords(x, y, 'julia_canvas');
+        let c = juliaC;
+        let iter = countIterations(z, c, max_iter);
+        let rgb = getColorForIter(iter);
+        // let rgb = [128, 128, 128];
 
         image.data[i] = rgb[0];
         image.data[i + 1] = rgb[1];
@@ -224,6 +227,7 @@ function juliaSet(image) {
         image.data[i + 3] = 255;
     }
 }
+
 
 ///////////////////////////////
 /////////  Renderers  //////////
