@@ -10,7 +10,7 @@ function drawArcCircle(canvas) {
 
     // circle without contour
     context.beginPath();
-    context.fillStyle = 'green';
+    context.fillStyle = "#00ff00";;
     context.arc(60,60,50,0,2*Math.PI);
     context.fill();
     // context.stroke();
@@ -20,9 +20,9 @@ function drawArcCircle(canvas) {
     context.beginPath();
     var width = 10;
     context.lineWidth = width;
-    context.strokeStyle = 'green';
+    context.strokeStyle = "#007f00";
     context.arc(140,140,50,0,2*Math.PI);
-    context.fillStyle = 'red';
+    context.fillStyle =  "#00ff00";
     context.fill();
     context.stroke();
 }

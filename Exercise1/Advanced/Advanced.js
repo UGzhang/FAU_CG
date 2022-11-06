@@ -60,9 +60,6 @@ function countIterations(start_z, c, max_iter) {
     //                  the first max_iter iterations, return max_iter. Use
     //                  function f_c().
     
-    // TODO 1.4b):      Change the return value of this function to avoid
-    //                  banding. 
-
     let z = start_z;
     let iter = 0;
     while(abs(z) <= 2){
@@ -70,7 +67,11 @@ function countIterations(start_z, c, max_iter) {
         if(++iter >= max_iter) break;
     }
     if((iter == max_iter)) return iter;
-    return iter + 1 - (Math.log(Math.log(abs(z)))/Math.log(2))
+    // return iter;
+
+    // TODO 1.4b):      Change the return value of this function to avoid
+    //                  banding. 
+    return iter + 1 - (Math.log(Math.log(abs(z)))/Math.log(2));
 }
 
 
