@@ -12,6 +12,16 @@ let line = new Line(    new Point( 10 / pixelScale,  10 / pixelScale),
                         new Point(180 / pixelScale, 180 / pixelScale),
                         new Color(0, 0, 0));
 
+
+function swapPoint(p1, p2){
+    let t = new Point();
+    t = p1;
+    p1 = p2;
+    p2 = t;
+    return p1, p2;
+}
+
+
 //////////////
 //// gui  ////
 //////////////
@@ -69,25 +79,53 @@ function bresenham(image, line) {
     //              on what to do next: 
 
     // compute deltas and update directions
+    let deltaY = Math.abs(y1-y0);
+    let deltaX = Math.abs(x1-x0);
 
+    let stepX = 1, stepY = 1;
 
+    if(x0 > x1){
+        stepX = -1;
+    }
+    if(y0 > y1){
+        stepY = -1;
+    }
+
+    let nPixels = deltaX;
+    let useXStep = true;
+    if(deltaX < deltaY){
+        nPixels = deltaY;
+        useXStep = false;
+        [deltaX, deltaY] = swap(deltaX, deltaY); 
+    }
 
     // set initial coordinates
-
-
+    let point = line.startPoint;
+    let d = 2 * deltaY - deltaX;
 
     // start loop to set nPixels 
-    let nPixels = 0; // think about how many pixels need to be set - zero is not correct ;)
     for (let i = 0; i < nPixels; ++i) {
-        // set pixel using the helper function setPixelS()
 
+        // set pixel using the helper function setPixelS()
+        setPixelS(image, point, new Color(255, 0, 0), pixelScale);
 
         // update error
-
+        if(d >= 0){
+            if(useXStep){
+                point.y += stepY;
+            }else{
+                point.x += stepX;
+            }
+            d = d - 2*deltaX;
+        }
 
         // update coordinates depending on the error
-
-
+        if(useXStep){
+            point.x += stepX;
+        }else{
+            point.y += stepY;
+        }
+        d = d + 2*deltaY;
     }
 }
 
