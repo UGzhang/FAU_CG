@@ -13,15 +13,6 @@ let line = new Line(    new Point( 10 / pixelScale,  10 / pixelScale),
                         new Color(0, 0, 0));
 
 
-function swapPoint(p1, p2){
-    let t = new Point();
-    t = p1;
-    p1 = p2;
-    p2 = t;
-    return p1, p2;
-}
-
-
 //////////////
 //// gui  ////
 //////////////
@@ -91,15 +82,20 @@ function bresenham(image, line) {
         stepY = -1;
     }
 
+
     let nPixels = deltaX;
     let useXStep = true;
     if(deltaX < deltaY){
         nPixels = deltaY;
         useXStep = false;
-        [deltaX, deltaY] = swap(deltaX, deltaY); 
+        let temp = deltaX;
+        deltaX = deltaY;
+        deltaY = temp;
     }
 
+
     // set initial coordinates
+
     let point = line.startPoint;
     let d = 2 * deltaY - deltaX;
 
