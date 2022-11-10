@@ -1,0 +1,6 @@
+Cons: 
+1. Very deep recursion possible, rather inefficient
+2. Single color only
+
+Pro:
+1. Easy to understand and write

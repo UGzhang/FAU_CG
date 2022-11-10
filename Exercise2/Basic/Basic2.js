@@ -37,20 +37,26 @@ function floodFill4(image, pixel, fillColor) {
     //                  for both the area and the border.
 
     // get the color at pixel location, use getPixel()
+ 
+    let point = getPixel(image, pixel);
 
 
 
     // base case 
     //       - color channels of the current color are equal to the color channels of the fillColor
     //       - pixel position is out of range
-
-
-
-    // set pixel color
-
+    if (point == null||(point.r == fillColor.r && point.g == fillColor.g && point.b == fillColor.b))
+        return;
+    
+     // set pixel color
+    setPixel(image, pixel, fillColor);
 
 
     // start recursion (4 neighboring pixels)
+    floodFill4(image, new Point(pixel.x + 1, pixel.y), fillColor);
+    floodFill4(image, new Point(pixel.x - 1, pixel.y), fillColor);
+    floodFill4(image, new Point(pixel.x, pixel.y + 1), fillColor);
+    floodFill4(image, new Point(pixel.x, pixel.y - 1), fillColor);
 
 
 
