@@ -76,6 +76,7 @@ function ActiveEdgeTableEntry(edgeTableEntry) {
     this.invSlope = edgeTableEntry.invSlope;
 }
 
+
 function compareActiveEdgeTableEntries(a, b) {
     return a.x_intersect - b.x_intersect;
 }
@@ -148,8 +149,9 @@ function scanline(image, polygon) {
 
             for(let step = leftX; step <= rightX; ++step){
                 setPixelS(image, new Point(step, y_scanline), polygon.color,1)
-            }
-        
+            }  
+        }
+
         // [mandatory]
         // update the x_intersect of the active edge table entries
         for (let i = 0; i < activeEdgeTable.nEntries; i++){
@@ -157,7 +159,7 @@ function scanline(image, polygon) {
         }
 
 
-        if(y_scanline > edgeTable.entries[edgeTable.nEntries-1].y_upper){ break;}
+        if(y_scanline > edgeTable.entries[edgeTable.nEntries-1].y_upper){ break; }
 
     }
 }
