@@ -9,7 +9,7 @@ function webGLStart(canvas) {
 
     let c = [0.3, 0.2];
     let r = 0.7;
-    let slices = 100;
+    let slices = 12;
     
     let vertices = [];
     let indices = [];
@@ -21,16 +21,43 @@ function webGLStart(canvas) {
     //              the circle's geometry. The number of
     //              triangles is stored in the variable slices.
 
-    vertices.push(-.5);
-    vertices.push(-.5);
-    vertices.push(.5);
-    vertices.push(-.5);
-    vertices.push(0);
-    vertices.push(0.5);
+    
+    // **** IMPORTANT****
+    // a and b should be center of a circle. if i set a and b as 0.3 and 0.2, there would be a bad display effect. should we change the r as 1, and [a,b] = [0,0]?
+    // var a = 0.3;
+    // var b = 0.2;
+    var a = 0;
+    var b = 0;
+    vertices.push(a);
+    vertices.push(b);
+    
+    for(var slice=0; slice <= slices; slice++) {
+        var radian = (2*Math.PI / 360) * (360 / slices) * slice;
+        var x = a + Math.sin(radian) * r;
+        var y = b - Math.cos(radian) * r;
+        vertices.push(x);
+        vertices.push(y);
+        
+        if(slice > 0) { 
+            indices.push(0); 
+            indices.push(slice); 
+            indices.push(slice + 1); 
+        }
+    }
 
-    indices.push(0);
-    indices.push(1);
-    indices.push(2);
+
+
+
+    // vertices.push(-.5);
+    // vertices.push(-.5);
+    // vertices.push(.5);
+    // vertices.push(-.5);
+    // vertices.push(0);
+    // vertices.push(0.5);
+
+    // indices.push(0);
+    // indices.push(1);
+    // indices.push(2);
 
     
 
