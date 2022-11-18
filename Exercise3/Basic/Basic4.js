@@ -72,7 +72,7 @@ function Basic4_1(canvas) {
         //			    performing a rotation by the angle 
         //			    alpha and replace the following line
         //			    by the appropriate code.
-        return new LinearTransformation([1, 0, 0, 1]);
+        return new LinearTransformation([Math.cos(alpha), - Math.sin(alpha), Math.sin(alpha), Math.cos(alpha)]);
     }
 
     function Scaling(scale) {
@@ -81,7 +81,7 @@ function Basic4_1(canvas) {
         //			    the scaling factor scale and replace
         //			    the following line by the appropriate 
         //			    code.
-        return new LinearTransformation([1, 0, 0, 1]);
+        return new LinearTransformation([scale, 0, 0, scale]);
     }
 
     function ShearingX(shearX) {
@@ -89,7 +89,7 @@ function Basic4_1(canvas) {
         //			    performing a shear along the x axis. 
         //			    Replace the following line by the
         //			    appropriate code.
-        return new LinearTransformation([1, 0, 0, 1]);
+        return new LinearTransformation([1, shearX, 0, 1]);
     }
 
     let context = canvas.getContext("2d");
@@ -133,14 +133,14 @@ function Basic4_2(canvas) {
         // TODO 3.4b)	Implement a linear transformation 
         //			    performing a shear along the x axis. 
         //              Replace the following code.
-        return new LinearTransformation([1, 0, 0, 1]);
+        return new LinearTransformation([1, - Math.tan(alpha/2), 0, 1]);
     }
 
     function ShearingY(shearY) {
         // TODO 3.4b)	Implement a linear transformation 
         //			    performing a shear along the y axis. 
         //              Replace the following code.
-        return new LinearTransformation([1, 0, 0, 1]);
+        return new LinearTransformation([1, 0, Math.sin(alpha), 1]);
     }
 
     let context = canvas.getContext("2d");
@@ -158,7 +158,9 @@ function Basic4_2(canvas) {
     //			    of triangle, call shearingX with the 
     //			    corresponding parameters!
     //              Use ApplyLinearTransformation() to transform the corner points.
-    let triangle1 = new Triangle(triangle.a, triangle.b, triangle.c);
+    let triangle1 = new Triangle(ApplyLinearTransformation(ShearingX(alpha), triangle.a),
+                                 ApplyLinearTransformation(ShearingX(alpha), triangle.b), 
+                                 ApplyLinearTransformation(ShearingX(alpha), triangle.c));
 
     RenderTriangle(context, new Viewport(150, 150, 150, 0), triangle1);
 
@@ -167,7 +169,9 @@ function Basic4_2(canvas) {
     //			    of triangle1, call shearingY with the 
     //			    corresponding parameters!
     //              Use ApplyLinearTransformation() to transform the corner points.
-    let triangle2 = new Triangle(triangle1.a, triangle1.b, triangle1.c);
+    let triangle2 = new Triangle(ApplyLinearTransformation(ShearingY(alpha), triangle1.a),
+                                 ApplyLinearTransformation(ShearingY(alpha), triangle1.b), 
+                                 ApplyLinearTransformation(ShearingY(alpha), triangle1.c));
 
     RenderTriangle(context, new Viewport(150, 150, 300, 0), triangle2);
 
@@ -176,7 +180,9 @@ function Basic4_2(canvas) {
     //			    of triangle2, call shearingX with the 
     //			    corresponding parameters!
     //              Use ApplyLinearTransformation() to transform the corner points.
-    let triangle3 = new Triangle(triangle2.a, triangle2.b, triangle2.c);
+    let triangle3 = new Triangle(ApplyLinearTransformation(ShearingX(alpha), triangle2.a),
+                                 ApplyLinearTransformation(ShearingX(alpha), triangle2.b), 
+                                 ApplyLinearTransformation(ShearingX(alpha), triangle2.c));
 
     RenderTriangle(context, new Viewport(150, 150, 450, 0), triangle3);
 }
@@ -193,7 +199,12 @@ function Basic4_3(canvas) {
         //			    of the affine transformation equivalent
         //			    to the composition of affineTransf1 and
         //			    affineTransf2.
-        return new AffineTransformation([1, 0, 0, 1], [0, 0]);
+        return new AffineTransformation([affineTransf2.A[0] * affineTransf1.A[0] + affineTransf2.A[1] * affineTransf1.A[2],
+                                         affineTransf2.A[0] * affineTransf1.A[1] + affineTransf2.A[1] * affineTransf1.A[3],
+                                         affineTransf2.A[2] * affineTransf1.A[0] + affineTransf2.A[3] * affineTransf1.A[2],
+                                         affineTransf2.A[2] * affineTransf1.A[1] + affineTransf2.A[3] * affineTransf1.A[3]], 
+                                         [affineTransf2.A[0] * affineTransf1.t[0] + affineTransf2.A[1] * affineTransf1.t[1] + affineTransf2.t[0],
+                                          affineTransf2.A[2] * affineTransf1.t[0] + affineTransf2.A[3] * affineTransf1.t[1] + affineTransf2.t[1]]);
 
     }
 
