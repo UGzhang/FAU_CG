@@ -86,7 +86,14 @@ void CG::update(float dt)
     //				mat4 glm::rotate(float angle, vec3 axis);
 
     // a) Sun
-    sun = mat4(1); // <- Change this line
+    {
+        glm::mat4 M = glm::mat4(1.0f);
+        M = glm::rotate(M, sunObliquity, glm::vec3(0.0, 1.0, 0.0));
+        float angle = glm::radians(360.0)*time/sunRotationTime;
+        M = glm::rotate(M, angle, glm::vec3(0.0, 0.0, 1.0));
+        M = glm::scale(M, glm::vec3(sunRadius));
+        sun = M;
+    }
 
     // b) Earth
     earth = glm::translate(vec3(earthOrbitRadius,0,0)); // <- Change this line
