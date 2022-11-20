@@ -89,21 +89,40 @@ void CG::update(float dt)
     {
         glm::mat4 M = glm::mat4(1.0f);
         M = glm::rotate(M, sunObliquity, glm::vec3(0.0, 1.0, 0.0));
-        float angle = glm::radians(360.0)*time/sunRotationTime;
-        M = glm::rotate(M, angle, glm::vec3(0.0, 0.0, 1.0));
+        M = glm::rotate(M, float(glm::radians(360.0) * time / sunRotationTime), glm::vec3(0.0, 0.0, 1.0));
         M = glm::scale(M, glm::vec3(sunRadius));
         sun = M;
     }
 
+
+    float e_x = cos(glm::radians(360.0) * time / earthRevolutionTime) * earthOrbitRadius;
+    float e_y = sin(glm::radians(360.0) * time / earthRevolutionTime) * earthOrbitRadius;
     // b) Earth
-    earth = glm::translate(vec3(earthOrbitRadius,0,0)); // <- Change this line
+    {
+        glm::mat4 M = glm::mat4(1.0f);
+        M = glm::translate(M, glm::vec3(e_x,e_y,0.0));
+        M = glm::rotate(M, float( glm::radians(360.0) * time / earthRotationTime), glm::vec3(0.0, 0.0, 1.0));
+        M = glm::rotate(M,earthObliquity, glm::vec3(0.0, 1.0, 0.0));
+        M = glm::scale(M, glm::vec3(earthRadius));
+        earth = M;
+    }
 
     // c) Moon
-    moon =  glm::translate(vec3(earthOrbitRadius + moonOrbitRadius,0,0)); // <- Change this line
+    {
+        glm::mat4 M = glm::mat4(1.0f);
+        float x = cos(glm::radians(360.0) * time / moonRevolutionTime) * moonOrbitRadius;
+        float y = cos(glm::radians(360.0) * time / moonRevolutionTime) * moonOrbitRadius;
+        M = glm::translate(M, glm::vec3(x, y, 0.0));
+        M = glm::rotate(M, float( glm::radians(360.0) * time / moonOrbitalInclination), glm::vec3(0.0, 0.0, 1.0));
+        M = glm::rotate(M,moonObliquity, glm::vec3(0.0, 1.0, 0.0));
+        M = glm::scale(M, glm::vec3(moonRadius));
+        moon = M;
+    }
 
     // d) Orbit Rings
     earthOrbit = glm::scale(vec3(earthOrbitRadius));
-    moonOrbit = glm::translate(vec3(earthOrbitRadius + moonOrbitRadius,0,0)); // <- Change this line
+    moonOrbit = glm::translate(vec3(e_x,e_y,0)); // <- Change this line
+    moonOrbit = glm::rotate(moonOrbit, moonOrbitalInclination, glm::vec3(1.0, 0.0,0.0));
 }
 
 void CG::render()
