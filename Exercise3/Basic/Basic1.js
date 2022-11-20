@@ -24,10 +24,8 @@ function webGLStart(canvas) {
     
     // **** IMPORTANT****
     // a and b should be center of a circle. if i set a and b as 0.3 and 0.2, there would be a bad display effect. should we change the r as 1, and [a,b] = [0,0]?
-    // var a = 0.3;
-    // var b = 0.2;
-    var a = 0;
-    var b = 0;
+    var a = c[0];
+    var b = c[1];
     vertices.push(a);
     vertices.push(b);
     

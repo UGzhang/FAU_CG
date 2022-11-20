@@ -56,7 +56,7 @@ function webGLStart(canvas) {
 
     let attrVertexPosition = gl.getAttribLocation(shaderProgram, "vVertex");
     gl.enableVertexAttribArray(attrVertexPosition);
-    gl.vertexAttribPointer(attrVertexPosition, 2, gl.FLOAT, false, 8, 0);
+    gl.vertexAttribPointer(attrVertexPosition, 2, gl.FLOAT, false, 20, 0); 
 
     let attrVertexColor = gl.getAttribLocation(shaderProgram, "vColor");
     gl.enableVertexAttribArray(attrVertexColor);
