@@ -31,7 +31,8 @@ function Basic1_1(canvas) {
         //              is the x component and point2D[1] is the z 
         //              component (Hint: have a look at the bottom left 
         //              of the output image, there you will see the x-z axis).
-        return 0.0;
+
+        return point2D[0];
     }
 
     ////////////////////////////////////
@@ -68,7 +69,8 @@ function Basic1_1(canvas) {
 
     // project polygon onto the image plane
     let polygonProjected = new Array();
-    for (let i = 0; i < polygon.length; ++i) polygonProjected.push(OrthogonalProjection2D(polygon[i]));
+    for (let i = 0; i < polygon.length; ++i) 
+        polygonProjected.push(OrthogonalProjection2D(polygon[i]));
 
     // draw projected polygon
     context.strokeStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
@@ -118,7 +120,11 @@ function Basic1_2(canvas) {
         //              everything to camera space. The variable 'imagePlane'
         //              gives you the z value of the image plane (You also have 
         //              to transform it to camera space coordinates.).
-        return 0.0;
+        
+        let x = point2D[0] - eye[0];
+        let z = point2D[1] - eye[1]
+
+        return (imagePlane - eye[1]) * x / z;
         
     }
 
@@ -210,16 +216,22 @@ mat3.perspective = function (out, fovy, near, far) {
     //              into the negative view direction.
     //              Use column-major order!
 
-    out[0] = 0;
+    f = far;
+    n = near;
+    var r = n * Math.tan(fovy / 2);
+    var l = -n;
+
+
+    out[0] = 2 * n / (r - l);
     out[1] = 0;
     out[2] = 0;
 
     out[3] = 0;
-    out[4] = 0;
+    out[4] = - (f + n) / (f - n);
     out[5] = 0;
 
     out[6] = 0;
-    out[7] = 0;
+    out[7] = -2 * f * n / (f - n);
     out[8] = 0;
 
     return out;
@@ -274,9 +286,17 @@ class Camera {
         //              The cameraMatrixInverse transforms from camera space to world space.
         //              You can use gl-matrix.js where necessary. Use column-major order!
         //              It can be handy to compute the inverted matrix first.
+     
+     
+        // let tan = Math.tan(this.fovy/2);
+        // let aspect = negViewDir[0] / negViewDir[1];
+        // mat3.set(this.cameraMatrix, )
+        
+
 
         // TODO 4.1c)   Set up the projection matrix using mat3.perspective(...), 
         //              which has to be implemented!
+
 
     }
 
