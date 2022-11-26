@@ -287,50 +287,34 @@ class Camera {
         //              You can use gl-matrix.js where necessary. Use column-major order!
         //              It can be handy to compute the inverted matrix first.
 
-        // let up = vec2.fromValues(1,0);
-        // let R = vec2.cross(vec3.create(), negViewDir, up);
-        // vec3.normalize(R, R);
+        let up = vec2.fromValues(1,0);
 
-        // let temp = vec3.cross(vec3.create(), R, vec3.fromValues(negViewDir[0], negViewDir[1], 0))
-        // let U = vec2.fromValues(temp[0],temp[1]);
-        // vec2.normalize(U[0],U[1]);
+        let N = negViewDir
 
-        // this.cameraMatrix[0] = R[0]
-        // this.cameraMatrix[1] = U[0]
-        // this.cameraMatrix[2] = 0
+        let U = vec2.cross(vec3.create(), N, up);
+        vec3.normalize(U, U);
+        
+        let V = vec3.cross(vec3.create(), U, vec3.fromValues(N[0], N[1], 0))
+        V = vec2.fromValues(V[0],V[1]);
+        vec2.normalize(V[0],V[1]);
 
-        // this.cameraMatrix[3] = R[1]
-        // this.cameraMatrix[4] = U[2]
-        // this.cameraMatrix[5] = 0
+        this.cameraMatrix[0] = V[0]
+        this.cameraMatrix[1] = N[0]
+        this.cameraMatrix[2] = 0
 
-        // this.cameraMatrix[6] = -vec2.dot(R, this.eye)
-        // this.cameraMatrix[7] = -vec2.dot(U, this.eye)
-        // this.cameraMatrix[8] = 1
+        this.cameraMatrix[3] = V[1]
+        this.cameraMatrix[4] = N[1]
+        this.cameraMatrix[5] = 0
 
-        let t = vec2.fromValues(1, 0);
-        let u = vec2.cross(vec3.create(), t, negViewDir);
-        vec3.normalize(u, u);
-        let v = vec3.cross(vec3.create(), u, vec3.fromValues(negViewDir[0], negViewDir[1], 0));
-        v = vec2.fromValues(v[0], v[1]);
-
-        this.cameraMatrix[0] = v[0];
-        this.cameraMatrix[1] = negViewDir[0];
-        this.cameraMatrix[2] = 0;
-
-        this.cameraMatrix[3] = v[1];
-        this.cameraMatrix[4] = negViewDir[1];
-        this.cameraMatrix[5] = 0;
-
-        this.cameraMatrix[6] = - vec2.dot(v, this.eye);
-        this.cameraMatrix[7] = - vec2.dot(negViewDir, this.eye);
-        this.cameraMatrix[8] = 1;
+        this.cameraMatrix[6] = -vec2.dot(V, this.eye)
+        this.cameraMatrix[7] = -vec2.dot(N, this.eye)
+        this.cameraMatrix[8] = 1
 
         mat3.invert(this.cameraMatrixInverse, this.cameraMatrix)
 
         // TODO 4.1c)   Set up the projection matrix using mat3.perspective(...), 
         //              which has to be implemented!
         mat3.perspective(this.projectionMatrix, this.fovy, this.near, this.far)
-
 
     }
 
