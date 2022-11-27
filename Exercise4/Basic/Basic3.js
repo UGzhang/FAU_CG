@@ -36,21 +36,11 @@
 
         // 4. Compute the resulting color using alpha blending in all
         //    three color channels.
-      
-        var bg = 0;
+    
         for(var i = 0; i < 4; i++){
-            
             if (images[i][index + 3] == 0){
                 continue;
             } else{
-                bg = bg + 1;
-            }
-    
-            if(bg == 1){
-                color[0] = images[i][index];
-                color[1] = images[i][index + 1];
-                color[2] = images[i][index + 2];
-            } else if(bg > 1){
                 color[0] = (1 - alphas[i])*color[0] + alphas[i]*images[i][index];
                 color[1] = (1 - alphas[i])*color[1] + alphas[i]*images[i][index + 1];
                 color[2] = (1 - alphas[i])*color[2] + alphas[i]*images[i][index + 2];
