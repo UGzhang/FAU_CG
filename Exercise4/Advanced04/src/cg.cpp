@@ -85,6 +85,12 @@ void CG::update(float dt)
         // Use the following methods to get random values:
         // float glm::linearRand(float min, float max);
         // vec3 glm::linearRand(vec3 min, vec3 max);
+        if(p.lifeTime < 0){
+            p.position = particleStart;
+            p.lifetime = glm::linearRand(1.0f, 10.0f);
+            p.timeOffset = glm::linearRand(0.1f, 1.0f);
+            t.velocity = glm::linearRand(0.1f, 1.0f) * (planeNormal + glm::linearRand(vec3(-1.0f,-1.0f,-1.0f), vec3(1.0f,1.0f,1.0f)));
+        }
     }
 }
 
@@ -118,14 +124,17 @@ void CG::renderOpaqueGeometryShadows()
     glUniform3fv(4,1,&pointOnPlane[0]);
     glUniform3fv(5,1,&planeNormal[0]);
 
-
     // TODO 4.4 b)
     // Remove Z-fighting with glPolygonOffset. Use -1 for both parameters.
     // Don't forget enabling and disabling polygon offsetting via glEnable() and glDisable().
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(-1.0f, -1.0f);
 
     glUniform4fv(2,1,&vec4(0,0,0,1)[0]);
     glUniformMatrix4fv(1, 1, GL_FALSE, &teapot[0][0]);
     teapotMesh.render();
+
+    glDisable(GL_POLYGON_OFFSET_FILL);
 
 }
 
@@ -142,7 +151,8 @@ void CG::renderParticles()
     // Render particles with alpha blending.
     // Use glBlendFunc.
     // Don't forget enabling and disabling blending via glEnable() and glDisable().
-
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     for(Particle& p : particles)
     {
@@ -163,7 +173,7 @@ void CG::renderParticles()
         planeMesh.render();
     }
 
-
+    glDisable(GL_BLEND);
 
 }
 
