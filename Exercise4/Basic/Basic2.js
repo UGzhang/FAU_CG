@@ -12,7 +12,7 @@
  * @param {number} far 
  * @returns out
  */
-mat4.perspective = function (out, fovy, near, far) {
+ mat4.perspective = function (out, fovy, near, far) {
     // TODO 4.2     Implement the creation of the projection
     //              matrix for 3D. Orientate yourselves by the 2D case
     //              implemented in Basic1.js.
@@ -103,16 +103,69 @@ class Camera3D {
         // this.u = ?
         // this.v = ? 
 
+        let negViewDir = vec3.create();
+
+        this.g = negViewDir;
+        this.w = negViewDir;
+        this.eyeu = negViewDir; 
+        this.u1 = negViewDir;
+        this.u = negViewDir;
+        this.v = negViewDir;
+        
+        this.g[0] = this.eye[0] / this.lookAtPoint[0]; 
+        this.g[1] = this.eye[1] / this.lookAtPoint[1]; 
+        this.g[2] = this.eye[2] / this.lookAtPoint[2];
+        vec3.normalize(this.g, this.g);
+
+        this.w[0] = (-this.g[0]) - this.g.length; 
+        this.w[1] = (-this.g[1]) - this.g.length; 
+        this.w[2] = (-this.g[2]) - this.g.length; 
+        vec3.normalize(this.w, this.w);
+
+        vec3.cross(this.u1, this.upVector, this.w);
+        this.u[0] = this.u1[0] / this.u1.length;
+        this.u[1] = this.u1[1] / this.u1.length;
+        this.u[2] = this.u1[2] / this.u1.length;
+        vec3.normalize(this.u, this.u);
 
 
+        vec3.cross(this.v, this.w, this.u);
 
-        // this.cameraMatrix = ?
+        this.cameraMatrix[0] = this.u[0];
+        this.cameraMatrix[1] = this.v[0];
+        this.cameraMatrix[2] = this.w[0];
+        this.cameraMatrix[3] = 0;
 
+        this.cameraMatrix[4] = this.u[1];
+        this.cameraMatrix[5] = this.v[1];
+        this.cameraMatrix[6] = this.w[1];
+        this.cameraMatrix[7] = 0;
 
+        this.cameraMatrix[8] = this.u[2];
+        this.cameraMatrix[9] = this.v[2];
+        this.cameraMatrix[10] = this.w[2];
+        this.cameraMatrix[11] = 0;
+         
+        this.ut = -(this.u.transpose);
+        this.vt = -(this.v.transpose)
+        this.wt = -(this.w.transpose);
+        
+        this.ans1 = negViewDir;
+        this.ans2 = negViewDir;
+        this.ans3 = negViewDir;
 
+        mat2.multiply(this.ans1, this.ut, this.eye);
+        mat2.multiply(this.ans2, this.vt, this.eye);
+        mat2.multiply(this.ans3, this.wt, this.eye);
+
+        this.cameraMatrix[12] = this.ans1;
+        this.cameraMatrix[13] = this.ans2;
+        this.cameraMatrix[14] = this.ans3;
+        this.cameraMatrix[15] = 1;
 
         // use (and implement) mat4.perspective to set up the projection matrix
         mat4.perspective(this.projectionMatrix, this.fovy, this.near, this.far);
+
     }
 } // end of Camera3D
 
