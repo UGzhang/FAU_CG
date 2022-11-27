@@ -22,6 +22,8 @@
 
     // 1. Set up a color as a return value, and initialize it with the 
     //    desired background color.
+    
+    var color = [255, 255, 255];
 
     // 2. Loop over the four circle images in the correct order to blend
     //    them one after another.
@@ -34,9 +36,30 @@
 
         // 4. Compute the resulting color using alpha blending in all
         //    three color channels.
-
-    // 5. Return the resulting color. Replace the following dummy line.
-    return [255, 255, 255];
+      
+        var bg = 0;
+        for(var i = 0; i < 4; i++){
+            
+            if (images[i][index + 3] == 0){
+                continue;
+            } else{
+                bg = bg + 1;
+            }
+    
+            if(bg == 1){
+                color[0] = images[i][index];
+                color[1] = images[i][index + 1];
+                color[2] = images[i][index + 2];
+            } else if(bg > 1){
+                color[0] = (1 - alphas[i])*color[0] + alphas[i]*images[i][index];
+                color[1] = (1 - alphas[i])*color[1] + alphas[i]*images[i][index + 1];
+                color[2] = (1 - alphas[i])*color[2] + alphas[i]*images[i][index + 2];
+            }
+        }
+    
+        // 5. Return the resulting color. Replace the following dummy line.
+        return [color[0], color[1], color[2]];
+    
 }
 
 
