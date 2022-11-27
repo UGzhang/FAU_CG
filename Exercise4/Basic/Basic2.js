@@ -16,13 +16,33 @@ mat4.perspective = function (out, fovy, near, far) {
     // TODO 4.2     Implement the creation of the projection
     //              matrix for 3D. Orientate yourselves by the 2D case
     //              implemented in Basic1.js.
+    var aspect =1;
+    f = far;
+    n = near;
+    var r = aspect* n * Math.tan(fovy / 2);
+    var l = -r;
+    var t = n * Math.tan(fovy / 2);
+    var b = -t;
 
-    // out[0] = ?
-    // out[1] = ?
-    // ...
+    out[0] = 2 * n / (r - l);
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
 
+    out[4] = 0;
+    out[5] = 2 * near / (t - b);
+    out[6] = 0;
+    out[7] = 0;
 
+    out[8] = (l + r) / (r - l);
+    out[9] = (b + t) / (t - b);
+    out[10] = - (f + n) / (f - n);
+    out[11] = -1;
 
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = - 2 * f * n / (f - n);
+    out[15] = 0;
 
 };
 
@@ -99,20 +119,42 @@ class Camera3D {
         //              notation from the lecture.
         //              Again, be careful to use column-major notation.
 
-        // this.w = ?
-        // this.u = ?
-        // this.v = ? 
+        // https://stackoverflow.com/questions/13832505/world-space-to-camera-space
+        let g = vec3.fromValues(this.eye[0]-this.lookAtPoint[0], this.eye[1]-this.lookAtPoint[1], this.eye[2]-this.lookAtPoint[2])
+        this.w = vec3.create()
+        vec3.normalize(this.w,g);
+        this.u = vec3.cross(vec3.create(), this.w, this.upVector);
+        vec3.normalize(this.u, this.u);
+        this.v = vec3.cross(vec3.create(), this.w, this.u);
 
+        let cam_matrix = mat4.create();
 
+        cam_matrix[0] = this.u[0]
+        cam_matrix[1] = this.v[0]
+        cam_matrix[2] = this.w[0]
+        cam_matrix[3] = 0
 
+        cam_matrix[4] = this.u[1]
+        cam_matrix[5] = this.v[1]
+        cam_matrix[6] = this.w[1]
+        cam_matrix[7] = 0
 
-        // this.cameraMatrix = ?
+        cam_matrix[8] = this.u[2]
+        cam_matrix[9] = this.v[2]
+        cam_matrix[10] = this.w[2]
+        cam_matrix[11] = 0
 
+        cam_matrix[12] = -vec3.dot(this.u, this.eye)
+        cam_matrix[13] = -vec3.dot(this.v, this.eye)
+        cam_matrix[14] = -vec3.dot(this.w, this.eye)
+        cam_matrix[15] = 1
 
-
-
+        let pro_matrix = vec4.create();
         // use (and implement) mat4.perspective to set up the projection matrix
-        mat4.perspective(this.projectionMatrix, this.fovy, this.near, this.far);
+        mat4.perspective(pro_matrix, this.fovy, this.near, this.far);
+        this.setMatrices(cam_matrix, pro_matrix);
+        
+
     }
 } // end of Camera3D
 
