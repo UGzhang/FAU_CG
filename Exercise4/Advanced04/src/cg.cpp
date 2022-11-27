@@ -156,8 +156,6 @@ void CG::renderParticles()
 
     for(Particle& p : particles)
     {
-
-
         // TODO: 4.4 c)
         // Compute the correct transformation matrix for each particle.
         // The particle must be oriented towards the current camera.
@@ -165,7 +163,7 @@ void CG::renderParticles()
 		// The upper left 3x3 part of a matrix can be obtained by mat3(matrix),
 		// a 3x3 matrix can be transformed to a 4x4 one by mat4(matrix).
 
-        mat4 particleTransformation =  glm::translate(p.position); // <- Change this line
+        mat4 particleTransformation =  glm::translate(p.position) * mat4(glm::inverse(mat3(camera.getViewMatrix()))) * glm::rotate(float(glm::radians(90.0)), vec3(1, 0, 0));
 
         glUniformMatrix4fv(1, 1, GL_FALSE, &particleTransformation[0][0]);
         float timeTmp = time + p.timeOffset;
@@ -185,6 +183,9 @@ static mat3 orthonormalBasis(vec3 dir)
     // Create an orthonormal basis from the unit vector "dir" and store it in "v".
 	// The last column (v[2]) should be the negative "dir".
 	// Use cross products to obtain the other two vectors.
+
+    v[2] = -dir;
+
     return v;
 }
 
@@ -203,6 +204,12 @@ void CG::renderParticleShadows()
     // Render particles with alpha blending.
     // Remove Z-figthing with glPolygonOffset.
     // Don't forget enabling and disabling everything.
+
+    glEnable(GL_BLEND)
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(-1.0f, -1.0f);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     for(Particle& p : particles)
     {
         mat3 v = orthonormalBasis(lightDir);
@@ -212,6 +219,9 @@ void CG::renderParticleShadows()
         glUniform1fv(6,1,&timeTmp);
         planeMesh.render();
     }
+
+    glDisable(GL_BLEND)
+    glDisable(GL_POLYGON_OFFSET_FILL)
 
 }
 
