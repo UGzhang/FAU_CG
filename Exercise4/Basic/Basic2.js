@@ -149,7 +149,7 @@ class Camera3D {
         cam_matrix[14] = -vec3.dot(this.w, this.eye)
         cam_matrix[15] = 1
 
-        let pro_matrix = vec4.create();
+        let pro_matrix = mat4.create();
         // use (and implement) mat4.perspective to set up the projection matrix
         mat4.perspective(pro_matrix, this.fovy, this.near, this.far);
         this.setMatrices(cam_matrix, pro_matrix);
