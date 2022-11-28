@@ -87,9 +87,9 @@ void CG::update(float dt)
         // vec3 glm::linearRand(vec3 min, vec3 max);
         if(p.lifeTime < 0){
             p.position = particleStart;
-            p.lifetime = glm::linearRand(1.0f, 10.0f);
+            p.lifeTime = glm::linearRand(1.0f, 10.0f);
             p.timeOffset = glm::linearRand(0.1f, 1.0f);
-            t.velocity = glm::linearRand(0.1f, 1.0f) * (planeNormal + glm::linearRand(vec3(-1.0f,-1.0f,-1.0f), vec3(1.0f,1.0f,1.0f)));
+            p.velocity = glm::linearRand(0.1f, 1.0f) * (planeNormal + glm::linearRand(vec3(-1.0f,-1.0f,-1.0f), vec3(1.0f,1.0f,1.0f)));
         }
     }
 }
@@ -184,6 +184,9 @@ static mat3 orthonormalBasis(vec3 dir)
 	// The last column (v[2]) should be the negative "dir".
 	// Use cross products to obtain the other two vectors.
 
+    // I dont know
+    //v[0] = ?
+    //v[1] = ?
     v[2] = -dir;
 
     return v;
@@ -205,7 +208,7 @@ void CG::renderParticleShadows()
     // Remove Z-figthing with glPolygonOffset.
     // Don't forget enabling and disabling everything.
 
-    glEnable(GL_BLEND)
+    glEnable(GL_BLEND);
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(-1.0f, -1.0f);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -220,8 +223,8 @@ void CG::renderParticleShadows()
         planeMesh.render();
     }
 
-    glDisable(GL_BLEND)
-    glDisable(GL_POLYGON_OFFSET_FILL)
+    glDisable(GL_BLEND);
+    glDisable(GL_POLYGON_OFFSET_FILL);
 
 }
 
@@ -276,4 +279,3 @@ void CG::renderGui()
 
     ImGui::End();
 }
-
