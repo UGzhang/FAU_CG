@@ -113,28 +113,34 @@ function PhongLighting(context, point, normal, eye, pointLight, albedo, showVect
     // 1. Compute view vector v, light vector l and the reflected light vector r (all pointing away from the point and normalized!).
     //    Note: To help you implementing this task, we draw the computed vectors for the user specified sample point.
     //    Replace the following dummy lines:
-    let v = vec2.fromValues(0, 0);
-    let l = vec2.fromValues(0, 0);
-    let r = vec2.fromValues(0, 0);
+    let v = vec2.fromValues(eye[0]-point[0], eye[1]-point[1]);
+    vec2.normalize(v,v);
+    let l = vec2.fromValues(pointLight[0]-point[0], pointLight[1]-point[1]);
+    vec2.normalize(l,l);
+    let r = vec2.sub(vec2.create(),vec2.scale(vec2.create(),normal,2*vec2.dot(normal,l)), l);
+    vec2.normalize(r,r);
 
     // 2. Compute the ambient part, use 0.1 * albedo as ambient material property.
     //    You can check your results by setting "color" (defined below) to only ambient part - 
     //    this should give you constant dark green.
+    let ambient = vec3.scale(vec3.create(),albedo,0.1);
 
     // 3. Compute the diffuse part, use 0.5 * albedo as diffuse material property.
     //    You can check your results by setting "color" (defined below) to only diffuse part - 
     //    this should give you a color which gets lighter the more the plane's normal coincides with the direction to the light.
+    let diffuse = vec3.scale(vec3.create(),albedo,0.5*vec2.dot(normal,l));
 
     // 4. Compute the specular part, assume an attenuated white specular material property (0.4 * [1.0, 1.0, 1.0]).
     //    Use the defined shiny factor.
     //    You can check your results by setting "color" (defined below) to only diffuse part - 
     //    this should give you a grey spotlight where view direction and reflection vector coincide.
     let shiny = 30.0;
+    let temp = Math.pow(vec2.dot(v,r), shiny)
+    let specular = vec3.fromValues(0.4*temp,0.4*temp,0.4*temp);
 
     // 5. Add ambient, diffuse and specular color.
     //    Store the result in the variable color - replace the following dummy line:
-    let color = vec3.create();
-
+    let color = vec3.add(vec3.create(), vec3.add(vec3.create(), ambient, diffuse), specular)
 
 
 
