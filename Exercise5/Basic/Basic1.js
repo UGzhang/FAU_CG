@@ -334,12 +334,17 @@ function Basic1_2(canvas) {
             // TODO 5.1b) Implement Flat Shading of the line segments - follow the stepwise instructions below:
 
             // 1. Compute representor of the primitive (-> midpoint on the line segment).
+            let midpoint = [(lineSegments[i][0][0] + lineSegments[i][1][0])/2, (lineSegments[i][0][1] + lineSegments[i][1][1])/2];
 
             // 2. Compute the normal of the line segment.
+            let normal = [-(lineSegments[i][1][1] - lineSegments[i][0][1]), lineSegments[i][1][0] - lineSegments[i][0][0]]
+
 
             // 3. Use the function PhongLighting that you implemented in the previous assignment to evaluate the color.
+            let color = PhongLighting(context, midpoint, normal, eye, pointLight, albedo, true);
 
             // 4. Set the stroke color (use setStrokeStyle() defined in this .js-file).
+            setStrokeStyle(context, color);
 
 
 
