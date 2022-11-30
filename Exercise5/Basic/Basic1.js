@@ -334,14 +334,15 @@ function Basic1_2(canvas) {
             // TODO 5.1b) Implement Flat Shading of the line segments - follow the stepwise instructions below:
 
             // 1. Compute representor of the primitive (-> midpoint on the line segment).
-            let midpoint = [(lineSegments[i][0][0] + lineSegments[i][1][0])/2, (lineSegments[i][0][1] + lineSegments[i][1][1])/2];
+            let midpoint = vec2.fromValues((lineSegments[i][0][0] + lineSegments[i][1][0])/2, (lineSegments[i][0][1] + lineSegments[i][1][1])/2);
 
             // 2. Compute the normal of the line segment.
-            let normal = [-(lineSegments[i][1][1] - lineSegments[i][0][1]), lineSegments[i][1][0] - lineSegments[i][0][0]]
+            let normal = vec2.fromValues(-(lineSegments[i][1][1] - lineSegments[i][0][1]), lineSegments[i][1][0] - lineSegments[i][0][0])
+            vec2.normalize(normal,normal);
 
 
             // 3. Use the function PhongLighting that you implemented in the previous assignment to evaluate the color.
-            let color = PhongLighting(context, midpoint, normal, eye, pointLight, albedo, true);
+            let color = PhongLighting(context, midpoint, normal, eye, pointLight, albedo, false);
 
             // 4. Set the stroke color (use setStrokeStyle() defined in this .js-file).
             setStrokeStyle(context, color);
@@ -441,22 +442,75 @@ function Basic1_3(canvas) {
             lineSegments[i] = [[start[0], start[1]], [end[0], end[1]]];
         }
         let albedo = [0, 1, 0];
-
+        
         // draw surface (line segments) using flat shading
         for (let i = 0; i < nLineSegments; ++i) {
 
             // TODO 5.1c) Implement Gouraud Shading of the line segments - follow the stepwise instructions below:
 
-            // 1. Compute vertex normals by interpolating between normals of adjacent line segments (weighted by line segment length!). Take care of border cases.
+            let sta = lineSegments[i][0];
+            let end = lineSegments[i][1];
 
+            // 1. Compute vertex normals by interpolating between normals of adjacent line segments (weighted by line segment length!). Take care of border cases.
+            var len_sta_left;
+            var normals_sta_left;
+            if(i != 0){
+                let prev_sta = lineSegments[i-1][0];
+                let prev_end = lineSegments[i-1][1];
+                len_sta_left = vec2.length(vec2.fromValues(prev_end[0] - prev_sta[0], prev_end[1] - prev_sta[1]));
+                normal_end_right = vec2.fromValues((-(prev_end[1]-prev_sta[1]), prev_end[0]-prev_sta[0]));
+                vec2.normalize(normals_sta_left, normals_sta_left);
+                normals_sta_left = vec2.scale(vec2.create(), normals_sta_left, len_sta_left);
+
+            }else{
+                len_sta_left = 0;
+                normals_sta_left = vec2.fromValues(0,0);
+            }
+
+            let len_sta_right = vec2.length(vec2.fromValues(end[0] - sta[0], end[1] - sta[1]));
+
+            let normal_sta_right = vec2.fromValues(-(end[1]-sta[1]), end[0]-sta[0]);
+            vec2.normalize(normal_sta_right, normal_sta_right);
+            normal_sta_right = vec2.scale(vec2.create(), normal_sta_right, len_sta_right);
+
+            let normal_sta = vec2.add(vec2.create(), normals_sta_left, normal_sta_right);
+            vec2.normalize(normal_sta,normal_sta);
+
+            let normal_end_left = normal_sta_right;
+            // let len_end_left = len_sta_right;
+
+
+            var normal_end_right;
+            var len_end_right;
+            if(i != nLineSegments-1){
+                let next_sta = lineSegments[i+1][0];
+                let next_end = lineSegments[i+1][1];
+                len_end_right = vec2.length(vec2.fromValues(next_end[0] - next_sta[0], next_end[1] - next_sta[1]));
+                normal_end_right = vec2.fromValues(-(next_end[1]-next_sta[1]), next_end[0]-next_sta[0]);
+                vec2.normalize(normal_end_right, normal_end_right);
+                normal_end_right = vec2.scale(vec2.create(), normal_end_right, len_end_right);
+            }else{
+                len_end_right = 0;
+                normal_end_right = vec2.fromValues(0,0);
+            }
+
+            let normal_end = vec2.add(vec2.create(), normal_end_left, normal_end_right);
+            vec2.normalize(normal_end,normal_end);
 
             // 2. Evaluate the color at the vertices using the PhongLighting function.
+            let color1 = PhongLighting(context, sta, normal_sta, eye, pointLight, albedo, false);
+            let color2 = PhongLighting(context, end, normal_end, eye, pointLight, albedo, false);
+            var c1 = floatToColor(color1);
+            var c2 = floatToColor(color2);
 
 
             // 3. Use the linear gradient stroke style of the context to linearly interpolate the vertex colors over the primitive (https://www.w3schools.com/TAgs/canvas_createlineargradient.asp).
             //    The color triples can be scaled from [0,1] to [0,255] using the function floatToColor().
             //    The start and end points of the line segments are stored in [y,x] order concerning the canvas, remember when using createLinearGradient()!
-
+            var grd = context.createLinearGradient(sta[1], sta[0], end[1], end[0]);
+            grd.addColorStop(0 ,'rgb(' + c1[0] + ',' + c1[1] + ',' + c1[2] + ')');
+			grd.addColorStop(1 ,'rgb(' + c2[0] + ',' + c2[1] + ',' + c2[2] + ')');
+			context.strokeStyle = grd;
 
 
             // draw line segment
