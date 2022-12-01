@@ -458,7 +458,7 @@ function Basic1_3(canvas) {
                 let prev_sta = lineSegments[i-1][0];
                 let prev_end = lineSegments[i-1][1];
                 len_sta_left = vec2.length(vec2.fromValues(prev_end[0] - prev_sta[0], prev_end[1] - prev_sta[1]));
-                normal_end_right = vec2.fromValues((-(prev_end[1]-prev_sta[1]), prev_end[0]-prev_sta[0]));
+                normals_sta_left = vec2.fromValues(-(prev_end[1]-prev_sta[1]), prev_end[0]-prev_sta[0]);
                 vec2.normalize(normals_sta_left, normals_sta_left);
                 normals_sta_left = vec2.scale(vec2.create(), normals_sta_left, len_sta_left);
 
