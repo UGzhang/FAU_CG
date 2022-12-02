@@ -1,0 +1,7 @@
+Flat Schading: 
+  There is no normal vector at the vertices of the triangle, but only the normal vectors on the entire surface of the triangle. 
+  When lighting, the entire triangle only presents one color, so if the position of the highlight is at the vertex of the triangle, the highlight cannot be displayed.
+  
+Phong Shading:  
+  Each vertex of the triangle has its own normal vector. The normal vector of each point in the surface is calculated according to the normal vector interpolation of the point, 
+  and then the illumination value is calculated pixel by pixel, which ensures that the details can be preserved.
