@@ -88,9 +88,11 @@ vec3 phong(
     //  light.ambientIntensity
 	//as well as the other function parameters.
 
-    vec3 color_ambient  = vec3(0);
-	vec3 color_diffuse  = vec3(0);
-    vec3 color_specular = vec3(0);
+    vec3 color_ambient  = light.ambientIntensity * surfaceColor;
+	vec3 color_diffuse  = light.diffuseIntensity * light.color * max(0,dot(n,l));
+    vec3 r = 2 * dot(n, l) * n - l;
+    float value = clamp(dot(v, r), 0.0, 1.0); // value between [0,1.0]
+    vec3 color_specular = light.specularIntensity * light.color * pow(value, light.shiny);
     return color_ambient + color_diffuse + color_specular;
 }
 
@@ -115,7 +117,15 @@ vec3 hsv2rgb(vec3 c)
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-
+float quantized(float brightness){
+    if(brightness <= 1.0/3){
+        return 0;
+    }else if(brightness <= 1.0/3*2){
+        return 0.5;
+    }else{
+        return 1.0;
+    }
+}
 
 
 void main()
@@ -131,22 +141,35 @@ void main()
     if(directionalLight.enable)
     {
         // TODO 5.4 b)
-        // Use the uniforms "directionalLight" and "objectColor" to compute "colorDirectional". 
-        colorDirectional = vec3(0); //<- change this line
+        // Use the uniforms "directionalLight" and "objectColor" to compute "colorDirectional".
+        vec3 l = -normalize(directionalLight.direction);
+        colorDirectional = phong(directionalLight, objectColor, n,l,v);
     }
 
     if(pointLight.enable)
     {
         //TODO 5.4 c)
         //Use the uniforms "pointLight" and "objectColor" to compute "colorPoint".
-        colorPoint = vec3(0); //<- change this line
+        float r = distance(pointLight.position,positionWorldSpace);
+        vec3 l = normalize(pointLight.position - positionWorldSpace);
+        // colorPoint is I
+        colorPoint = phong(pointLight, objectColor, n,l,v) / (pointLight.attenuation.x + pointLight.attenuation.y*r + pointLight.attenuation.z*pow(r,2));
+
     }
 
     if(spotLight.enable)
     {
         //TODO 5.4 d)
         //Use the uniforms "spotLight" and "objectColor" to compute "colorSpot".
-        colorSpot = vec3(0); //<- change this line
+        float r = distance(spotLight.position,positionWorldSpace);
+        vec3 l = normalize(spotLight.position - positionWorldSpace);
+        float angle = acos(dot(l, normalize(spotLight.direction)));
+        if(angle <= spotLight.angle){
+            float smoothIntensity = 1 - smoothstep(spotLight.angle*spotLight.sharpness, spotLight.angle, angle);
+            colorPoint = phong(spotLight, objectColor, n,l,v) / (spotLight.attenuation.x + spotLight.attenuation.y*r + spotLight.attenuation.z*pow(r,2)) * smoothIntensity ;
+        }else{
+            colorSpot = vec3(0);
+        }
     }
 
 
@@ -154,6 +177,15 @@ void main()
     if(cellShading)
     {
         //TODO 5.4 e)
+        vec3 colorDirectional_hsv = rgb2hsv(colorDirectional);
+        vec3 colorPoint_hsv = rgb2hsv(colorPoint);
+        vec3 colorSpot_hsv =  rgb2hsv(colorSpot);
+
+        colorDirectional_hsv[2] = quantized(colorDirectional_hsv[2]);
+        colorPoint_hsv[2] = quantized(colorPoint_hsv[2]);
+        colorSpot_hsv[2] = quantized(colorSpot_hsv[2]);
+
+        out_color = hsv2rgb(colorDirectional_hsv) + hsv2rgb(colorSpot_hsv) + hsv2rgb(colorPoint_hsv);
 
     }else
     {
