@@ -216,6 +216,7 @@ class MipMap {
         for (let l = 1; l < this.nLevel; ++l) {
             // 1. Compute the texture dimension of level 'l'.
 
+         
             // 2. Allocate an array with the right dimension (see code for the 0th level above).
 
             // 3. Compute the color values using a boxfilter.
