@@ -44,7 +44,23 @@ function Basic2a(canvas) {
     // Then render the projected triangle instead of the original triangle!
 
     // Replace this dummy line!
-    drawTriangle(context, canvasWidth, canvasHeight, triangle, ["A'", "B'", "C'"]);
+    // drawTriangle(context, canvasWidth, canvasHeight, triangle, ["A'", "B'", "C'"]);
+   
+    let vec_1 = vec4.fromValues(triangle[0][0], triangle[0][1], triangle[0][2], 1);
+    let vec_2 = vec4.fromValues(triangle[1][0], triangle[1][1], triangle[1][2], 1);
+    let vec_3 = vec4.fromValues(triangle[2][0], triangle[2][1], triangle[2][2], 1);
+
+    vec4.transformMat4(vec_1, vec_1, M);
+    vec4.transformMat4(vec_2, vec_2, M);
+    vec4.transformMat4(vec_3, vec_3, M);
+
+    var project1 = vec3.dehomogenize(vec_1);
+    var project2 = vec3.dehomogenize(vec_2);
+    var project3 = vec3.dehomogenize(vec_3);
+
+
+    // Replace this dummy line!
+    drawTriangle(context, canvasWidth, canvasHeight, [project1, project2, project3], ["A'", "B'", "C'"]);
     
     // draw axis
     arrow(context, 15, 285, 15, 255);
@@ -73,12 +89,27 @@ function Basic2b(canvas) {
 
     // TODO 6.2
     // 1. Project the triangle.
+    let vec_1 = vec4.fromValues(triangle[0][0], triangle[0][1], triangle[0][2], 1);
+    let vec_2 = vec4.fromValues(triangle[1][0], triangle[1][1], triangle[1][2], 1);
+    let vec_3 = vec4.fromValues(triangle[2][0], triangle[2][1], triangle[2][2], 1);
 
+    vec4.transformMat4(vec_1, vec_1, M);
+    vec4.transformMat4(vec_2, vec_2, M);
+    vec4.transformMat4(vec_3, vec_3, M);
+
+    let project1 = vec3.dehomogenize(vec_1);
+    let project2 = vec3.dehomogenize(vec_2);
+    let project3 = vec3.dehomogenize(vec_3);
     // 2. Compute the midpoints of the edges (Use the helper function midPoint defined above!)
     //    and store them in another triangle.
 
-    // 3. Draw the triangles (Leave last argument undefined for inner triangle!).
+    let pab = midPoint(project1,project2);
+    let pbc = midPoint(project2,project3);
+    let pca = midPoint(project1,project3);
 
+    // 3. Draw the triangles (Leave last argument undefined for inner triangle!).
+    drawTriangle(context, canvasWidth, canvasHeight, [project1, project2, project3], ["A'", "B'", "C'"]);
+    drawTriangle(context, canvasWidth, canvasHeight, [pab, pbc, pca], undefined);
     
     // draw axis
     arrow(context, 15, 285, 15, 255);
@@ -102,21 +133,44 @@ function Basic2c(canvas) {
     let triangleInner = new Array(3);
     for (let i = 0; i < 3; ++i) {
         triangleInner[i] = [0.5 * (triangle[i][0] + triangle[(i + 1) % 3][0]),
-                             0.5 * (triangle[i][1] + triangle[(i + 1) % 3][1]),
-                             0.5 * (triangle[i][2] + triangle[(i + 1) % 3][2])];
+                            0.5 * (triangle[i][1] + triangle[(i + 1) % 3][1]),
+                            0.5 * (triangle[i][2] + triangle[(i + 1) % 3][2])];
     }
     // projection matrix
     let M = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -2.0, -1.0, 0.0, 0.0, -3.0, 0.0];
     // TODO 6.2
     // 1. Project the triangle and store it in homogeneous coordinates.
+    let vec_1 = vec4.fromValues(triangle[0][0], triangle[0][1], triangle[0][2], 1);
+    let vec_2 = vec4.fromValues(triangle[1][0], triangle[1][1], triangle[1][2], 1);
+    let vec_3 = vec4.fromValues(triangle[2][0], triangle[2][1], triangle[2][2], 1);
+
+    vec4.transformMat4(vec_1, vec_1, M);
+    vec4.transformMat4(vec_2, vec_2, M);
+    vec4.transformMat4(vec_3, vec_3, M);
 
     // 2. Compute the mid points, but this time in homogeneous coordinates (Make use of midPoint()!).
+    let pab = midPoint(vec4.fromValues(triangle[0][0], triangle[0][1], triangle[0][2], 1), vec4.fromValues(triangle[1][0], triangle[1][1], triangle[1][2], 1));
+    vec4.transformMat4(pab, pab, M);
+    let pbc = midPoint(vec4.fromValues(triangle[0][0], triangle[0][1], triangle[0][2], 1), vec4.fromValues(triangle[2][0], triangle[2][1], triangle[2][2], 1));
+    vec4.transformMat4(pbc, pbc, M);
+    let pca = midPoint(vec4.fromValues(triangle[1][0], triangle[1][1], triangle[1][2], 1), vec4.fromValues(triangle[2][0], triangle[2][1], triangle[2][2], 1));
+    vec4.transformMat4(pca, pca, M);
 
     // 3. Dehomogenize the points.
+    vec_1 = vec3.dehomogenize(vec_1);
+    vec_2 = vec3.dehomogenize(vec_2);
+    vec_3 = vec3.dehomogenize(vec_3);
 
+    let p1 = vec3.dehomogenize(pab);
+    let p2 = vec3.dehomogenize(pbc);
+    let p3 = vec3.dehomogenize(pca);
     // 4. Draw the triangles (Leave last argument undefined for inner triangle!).
+    drawTriangle(context, canvasWidth, canvasHeight, [vec_1, vec_2, vec_3], ["A'", "B'", "C'"]);
+    drawTriangle(context, canvasWidth, canvasHeight, [p1, p2, p3], undefined);
 
     
+
+
     // draw axis
     arrow(context, 15, 285, 15, 255);
     arrow(context, 15, 285, 45, 285);
