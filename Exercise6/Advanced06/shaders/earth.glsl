@@ -79,8 +79,8 @@ void main()
         // Compute tangent and bitangent for this vertex.
         // Hint: Compute them in object space (where 'normalObject' is already given)
 		// and then transform them to world space using the model matrix 'model'!
-        tangent = vec3(0);
-        bitangent = vec3(0);
+        tangent = cross(vec3(0,1,0),normal);
+        bitangent = cross(normal,tangent);
     }
 
     if(translateVertices)
@@ -88,7 +88,8 @@ void main()
         // TODO 6.5 e)
         // Translate object space vertices ('positionObjectSpace') along object space normals ('normalObject').
         // Use the texture 'earthBump' and the uniform 'heightScale'.
-        positionObjectSpace += vec3(0);
+
+        positionObjectSpace += heightScale * vec3(texture(earthBump,tc)).x * normalObject;
     }
 
     positionWorldSpace = vec3(model * vec4(positionObjectSpace, 1));
@@ -142,12 +143,10 @@ void main() {
 		// which only supports positive values. That is why you have to map the normal 
 		// from [0, 1] back to [-1, 1] before you can transform it with the TBN matrix.
         // The final normal in world space should be stored in 'n'.
-        mat3 TBN = mat3(
-                    vec3(1,0,0),
-                    vec3(0,1,0),
-                    vec3(0,0,1)
-                    );
-        n = vec3(0);
+        vec3 n_texture = vec3(texture(earthNormal, tc));
+        n_texture = normalize(n_texture * 2 - 1);
+        mat3 TBN = mat3(tangent, bitangent, normal);
+        n = TBN * n_texture;
     }
     if(normalMethod == 2)
     {
@@ -156,12 +155,18 @@ void main() {
         // - Use the formula on the exercise sheet to compute T and B.
         // - Compute the world space normal similar to 6.5 c).
 
+        vec3 p_x = dFdx(positionWorldSpace);
+        vec3 p_y = dFdy(positionWorldSpace);
+        vec2 c_x = dFdx(tc);
+        vec2 c_y = dFdy(tc);
         mat3 TBN = mat3(
-                    vec3(1,0,0),
-                    vec3(0,1,0),
-                    vec3(0,0,1)
+                    cross(p_y, normal)*c_x.x + cross(normal,p_x)*c_y.x,
+                    cross(p_y, normal)*c_x.y + cross(normal,p_x)*c_y.y,
+                    normal
                     );
-        n = vec3(0);
+        vec3 n_texture = vec3(texture(earthNormal, tc));
+        n_texture = normalize(n_texture * 2 - 1);
+        n = TBN * n_texture;
     }
 
 
@@ -183,8 +188,8 @@ void main() {
         
         if(useColor) //Note: 'useColor' is passed as a uniform and can be enabled in the GUI.
         {
-            dayColor = vec3(1); //<- TODO: read from the texture 'earthColor' here
-            nightColor = vec3(0); //<- TODO: read from the texture 'earthNight' here
+            dayColor = vec3(texture(earthColor, tc));//<- TODO: read from the texture 'earthColor' here
+            nightColor = vec3(texture(earthNight, tc)); //<- TODO: read from the texture 'earthNight' here
         }
 
         if(useClouds)
@@ -200,7 +205,7 @@ void main() {
             dayColor *=  clouds;
 		}
 
-        vec3 color_diffuse = sunColor * dayColor * max(0, dot(n, l)); // <- change this line for 6.5a)
+        vec3 color_diffuse = sunColor * mix(dayColor, nightColor, max(0, dot(n, l))); // <- change this line for 6.5a)
 
 
 
@@ -208,7 +213,8 @@ void main() {
         // Read and use the specular intensity value stored in the 'earthSpec' texture.
 		// The texture stores values between 0 and 1. Scale these values to [0, 0.7] and 
 		// then clamp values smaller than 0.2 to 0.2 to obtain a natural look.
-        vec3 color_specular = sunColor * pow(max(0.0, dot(v, r)), 20); // <-- modify this line with the specular intensity value
+        float specIntensity = texture(earthSpec, tc).x * 0.7;
+        vec3 color_specular = sunColor * max(0.2,specIntensity) * pow(max(0.0, dot(v, r)), 20); // <-- modify this line with the specular intensity value
 
         color = color_diffuse + color_specular;
     }

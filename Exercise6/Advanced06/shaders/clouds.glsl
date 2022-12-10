@@ -46,6 +46,8 @@ void main() {
     // - Make sure you don't see clouds on the night side of the earth. 
 	//   You can reach this goal by taking the dot product 
 	//   between normal and direction to the light into account again.
-    float cloudAlpha = 0.5;
-    out_color = vec4(1,1,1,cloudAlpha);
+    float cloudAlpha = dot(normal,normal(sunPosition-positionWorldSpace));
+    vec3 c_texture = vec3(texture(earthClouds,fc));
+
+    out_color = vec4(c_texture,cloudAlpha);
 }
