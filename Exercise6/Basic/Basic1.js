@@ -215,11 +215,20 @@ class MipMap {
         //              the texture to be a power of 2.
         for (let l = 1; l < this.nLevel; ++l) {
             // 1. Compute the texture dimension of level 'l'.
+            let newTexDim = texDim / Math.pow(2,l);
 
-         
             // 2. Allocate an array with the right dimension (see code for the 0th level above).
+            this.texLevels[l] = new Array(newTexDim);
 
             // 3. Compute the color values using a boxfilter.
+            let k = 0;
+            for(let j=0; j<newTexDim; j++){
+                this.texLevels[l][j] = [
+                        (this.texLevels[l - 1][k][0] + this.texLevels[l - 1][k + 1][0]) / 2,
+                        (this.texLevels[l - 1][k][1] + this.texLevels[l - 1][k + 1][1]) / 2,
+                        (this.texLevels[l - 1][k][2] + this.texLevels[l - 1][k + 1][2]) / 2];
+                k +=2;
+            }
 
         }
     }
@@ -297,16 +306,20 @@ function Basic1b(canvas) {
 
         // TODO 6.1b)   Determine the appropriate level based on the footprint of the pixel.
         // 1. Use pixelBottom_proj[2] and pixelTop_proj[2] to determine the footprint of the pixel on the texture.
-        
+        let footprint = Math.abs(pixelBottom_proj[2] - pixelTop_proj[2]);
 
+        
         // 2. Determine the mipmap level where the texel size is larger than the pixel footprint.
         //    Use the mipmap pyramid stored in 'mipmap'.
         //    The texel size of the coarsest level is defined to be 1.
-
-
-        // replace this line
         let level = 0;
+        for(let i = 0; i < mipmap.nLevel; i++){
+            if(1.0/mipmap.texLevels[i] > footprint){
+                level = i;
+            }
+        }
 
+        // replace this line 
         return level;
     }
 
