@@ -7,7 +7,7 @@
  * @param {number[]} rgb_float - three float color values [r,g,b] in the range [0,1]
  * @returns {number[]} - three integer color values [r,g,b] in the range [0,255]
  */
- function floatToColor(rgb_float) {
+function floatToColor(rgb_float) {
     return [Math.max(Math.min(Math.floor(rgb_float[0] * 255.0), 255), 0),
             Math.max(Math.min(Math.floor(rgb_float[1] * 255.0), 255), 0),
             Math.max(Math.min(Math.floor(rgb_float[2] * 255.0), 255), 0)];
@@ -108,19 +108,22 @@ function Basic1a(canvas) {
         let u = Math.max(Math.min(texCoord[0], 1.0), 0.0) * (texDimU - 1); 
         let v = Math.max(Math.min(texCoord[1], 1.0), 0.0) * (texDimV - 1);
 
-        var uv = [[Math.floor(u), Math.floor(v)],[ Math.ceil(u), Math.floor(v)],[ Math.floor(u), Math.ceil(v)],[ Math.ceil(u), Math.ceil(v)]];
+        var uv = [[Math.floor(u), Math.floor(v)],[Math.ceil(u), Math.floor(v)],[Math.floor(u), Math.ceil(v)],[Math.ceil(u), Math.ceil(v)]];
         // 2. Compute the linear indices of the surrounding pixels (e.g. idx = texDimU * v + u;).
-        var idx=[texDimU*uv[0][1]+uv[0][0],texDimU*uv[1][1]+uv[1][0],
-            texDimU*uv[2][1]+uv[2][0],texDimU*uv[3][1]+uv[3][0]];
+        var idx=[texDimU * uv[0][1] + uv[0][0], texDimU*uv[1][1] + uv[1][0],
+                 texDimU * uv[2][1] + uv[2][0], texDimU*uv[3][1] + uv[3][0]];
 
         // 3. Interpolate linearly in u (use interpolateColor()). 
         //    You can access the color at index 'idx' using texture[idx].
         var u1 = u - Math.floor(u);
         var v1 = v - Math.floor(v);
-        var color1 = interpolateColor(texture[idx[0]],texture[idx[1]],u1);
-        var color2 = interpolateColor(texture[idx[2]],texture[idx[3]],u1);
+        var color1 = interpolateColor(texture[idx[0]], texture[idx[1]],u1);
+        var color2 = interpolateColor(texture[idx[2]], texture[idx[3]],u1);
+
         // 4. Interpolate linearly in v (use interpolateColor()).
+
         var color3 = interpolateColor(color1,color2,v1);
+        
         // replace this line
         return color3;
         // return [0.7, 0.7, 0.7];
