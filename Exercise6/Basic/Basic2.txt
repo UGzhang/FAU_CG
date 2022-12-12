@@ -1,0 +1,3 @@
+6.2b: Not Correct. Barycentric interpolation.
+
+6.2c: Correct.
