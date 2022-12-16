@@ -31,6 +31,17 @@ function Basic2() {
         //              their usage in createScene().
 
         let shape = document.createElement("shape");
+        let box = document.createElement("box");
+        let appearance = document.createElement("appearance");
+        let material = document.createElement("material");
+
+        material.setAttribute("white", "0, 0, 0.3");
+
+        appearance.appendChild(material);
+        shape.appendChild(appearance);
+        shape.appendChild(box);
+
+
         return shape;
     }
 
@@ -73,7 +84,12 @@ function Basic2() {
         //              to return the newly created transform
         //              instead of the parent transform.
 
-        return parent;
+        let transformation = document.createElement("transform");
+        transformation.setAttribute("scale", "0.33, 0.33, 0.33");
+        transformation.setAttribute("translation", translation);
+
+        parent.appendChild(transformation);
+        return transformation;
     }
 
     function createScene() {
