@@ -1,4 +1,5 @@
 ﻿#include "quaternion.h"
+#include <math.h>
 
 
 Quaternion::Quaternion()
@@ -12,8 +13,9 @@ Quaternion::Quaternion(vec3 axis, float angle)
     // TODO 7.3 a)
     // Initialize with classic axis angle rotation as defined in the lecture.
 	// Change the following two lines!
-	real = 1;
-	img = vec3(0);
+	// https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions -  Quaternions
+    real = cos(angle/2); // qr
+	img = axis * sin(angle/2) //qi or qj or qk
 }
 
 
