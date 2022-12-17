@@ -99,7 +99,6 @@ float dot(Quaternion x, Quaternion y)
 {
     // TODO 7.3 b)
 	// Compute the dot product of x and y.
-
     return x.real*y.real + glm::dot(x.img,y.img);
 }
 
@@ -111,6 +110,8 @@ Quaternion operator*(Quaternion l, Quaternion r)
     // Perform quaternion-quaternion multiplication as defined in the lecture.
 	// Hint: You can use the glm function for vector products.
     Quaternion result;
+    result.real = l.real * r.real - glm::dot(l.img, r.img);
+    result.img = l.real * r.img + r.real * l.img + glm::cross(l.img,r.img);
     return result;
 }
 
@@ -118,7 +119,11 @@ vec3 operator*(Quaternion l, vec3 r)
 {
     // TODO 7.3 c)
     // Rotate the vector 'r' with the quaternion 'l'.
-    return vec3(0);
+    // https://www.mathworks.com/help/aeroblks/quaternionrotation.html
+    Quaternion v;
+    v.real = 0;
+    v.img = r;
+    return (l.normalize().inverse() * v * l.normalize()).img;
 }
 
 Quaternion operator*(Quaternion l, float r)
@@ -126,6 +131,8 @@ Quaternion operator*(Quaternion l, float r)
     // TODO 7.3 c)
     // Perform quaternion-scalar multiplication.
     Quaternion result;
+    result.real = r * l.real;
+    result.img = r * l.img;
     return result;
 }
 
@@ -134,6 +141,8 @@ Quaternion operator+(Quaternion l, Quaternion r)
     // TODO 7.3 c)
 	// Return the sum of the two quaternions.
     Quaternion result;
+    result.real = l.real + r.real;
+    result.img = l.img + r.img;
     return result;
 }
 
@@ -147,9 +156,15 @@ Quaternion slerp(Quaternion x, Quaternion y, float t)
     // Spherical linear interpolation (slerp) of quaternions.
 
     // Compute the interpolated quaternion and return it normalized.
-	
+
     Quaternion result;
-    return result;
+    float dot_x_y = dot(x,y);
+    if(dot_x_y <= 1 - epsilon){
+        float angle = acos(dot_x_y);
+        return x * (sin((1-t)*angle) / sin(angle)) + y * (sin(t*angle)/ sin(angle));
+    }else{
+        return x * (1-t) + y * t;
+    }
 }
 
 std::ostream& operator<<(std::ostream &str, Quaternion r)
