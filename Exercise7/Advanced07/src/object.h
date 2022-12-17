@@ -41,7 +41,12 @@ struct Object
     {
         // TODO 7.5 b)
         // Interpolate between the current and last transformation with the interpolation parameter alpha.
-        interpolatedTransformation = currentTransformation;
+        Transformation t;
+        t.scale = glm::mix(lastTransformation.scale, currentTransformation.scale, alpha);
+        t.orientation = slerp(lastTransformation.orientation, currentTransformation.orientation, alpha);
+        t.position = glm::mix(lastTransformation.position, currentTransformation.position,alpha);
+
+        interpolatedTransformation = t;
     }
 
 };

@@ -15,7 +15,7 @@ Quaternion::Quaternion(vec3 axis, float angle)
 	// Change the following two lines!
 	// https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions -  Quaternions
     real = cos(angle/2); // qr
-	img = axis * sin(angle/2) //qi or qj or qk
+	img = axis * sin(angle/2);//qi or qj or qk
 }
 
 

@@ -18,8 +18,8 @@ void FPSCamera::translate(float dx, float dz, float dt)
 	// Take cameraSpeed into account.
 
     //Change these two lines...
-    vec3 velocity = vec3(1,0,0) * cameraSpeed;
-    currentTransformation.position += vec3(0,1,0) * dt;
+    vec3 velocity = vec3(dx,0,dz) * cameraSpeed;
+    currentTransformation.position += velocity * dt;
 }
 
 void FPSCamera::turn(vec2 relMouseMovement)
@@ -33,11 +33,18 @@ void FPSCamera::turn(vec2 relMouseMovement)
     // - The local x axis of the camera must always be parallel to the ground!
     // - Forbid upside-down turning: (newOrientation * vec3(0,1,0)).y should be > 0.
 	//	 Otherwise, only use the rotation around the y axis.
-
+    Quaternion x(vec3(0,1,0),dx);
+    Quaternion y(vec3(1,0,0),dy);
 
     // compute newOrientation from currentTransformation.orientation
     Quaternion newOrientation;
-
+    Quaternion x_rot = x * currentTransformation.orientation;
+    Quaternion y_rot  = x_rot * y;
+    if((y_rot * vec3(0,1,0)).y > 0){
+        newOrientation = y_rot;
+    } else{
+        newOrientation = x_rot;
+    }
 
     // When you are done, set current transformation and last transformation so that we do not interpolate mouse motion
     // (Don't change these two lines!).
@@ -58,8 +65,15 @@ void FPSCamera::updatePosition(float dt)
     // S - Backward
     // A - Left
     // D - Right
-    bool dPressed = keyBoardState[SDL_SCANCODE_D]; // example of how to get the keystate
-
+    if(keyBoardState[SDL_SCANCODE_W]){
+        translate(0,-1,dt);
+    }else if(keyBoardState[SDL_SCANCODE_S]){
+        translate(0,1,dt);
+    }else if(keyBoardState[SDL_SCANCODE_A]){
+        translate(-1,0, dt);
+    }else if(keyBoardState[SDL_SCANCODE_D]){
+        translate(1, 0, dt);
+    }
 
     // TODO 7.4 c)
     // Implement a simple jumping behaviour when pressing "space" (= SDL_SCANCODE_SPACE).
@@ -70,6 +84,11 @@ void FPSCamera::updatePosition(float dt)
 	// - Change vy according to the earth acceleration.
     // - y should not drop below startY.
     float& y = currentTransformation.position.y;
+    if(y == startY && keyBoardState[SDL_SCANCODE_SPACE]){
+        vy = 5; //
+    }
+    y = max(y + vy * dt, startY);
+    vy -= 9.81 *dt;
 }
 
 void FPSCamera::updateOrientation(bool capture)
