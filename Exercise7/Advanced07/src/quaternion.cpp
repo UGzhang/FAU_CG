@@ -59,13 +59,16 @@ float Quaternion::norm() const
 {
     // TODO 7.3 b)
     // Compute the L2 norm of this vector.
-    return 0;
+    return sqrt(real*real + img.x*img.x + img.y*img.y + img.z*img.z);
 }
 
 Quaternion Quaternion::normalize()
 {
     // TODO 7.3 b)
     // Normalize this quaternion.
+    float length = norm();
+    real /= length;
+    img /= length;
     return *this;
 }
 
@@ -74,6 +77,8 @@ Quaternion Quaternion::conjugate() const
     // TODO 7.3 b)
 	// Return the conjugate of this quaternion.
     Quaternion result;
+    result.real = real;
+    result.img = img * -1.0f;
     return result;
 }
 
@@ -81,7 +86,10 @@ Quaternion Quaternion::inverse() const
 {
     // TODO 7.3 b)
 	// Return the inverse of this quaternion.
+    float norm_2 = pow(norm(),2);
     Quaternion result;
+    result.real = real / norm_2;
+    result.img = img / norm_2;
     return result;
 }
 
@@ -91,7 +99,8 @@ float dot(Quaternion x, Quaternion y)
 {
     // TODO 7.3 b)
 	// Compute the dot product of x and y.
-    return 0;
+
+    return x.real*y.real + glm::dot(x.img,y.img);
 }
 
 
