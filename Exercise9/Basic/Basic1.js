@@ -738,14 +738,16 @@ function Basic1(canvas) {
 
             let ray;
             // TODO 9.1a)   Set up primary ray based on the camera origin (eye) and the current pixel position (pixelPos).
-            //              ray = new Ray(p0, dir);
+                let dir = vec2.create();
+                vec2.subtract(dir, pixelPos, eye);
+                vec2.normalize(dir,dir);
+                ray = new Ray(eye, dir);
 
 
             let pixelColor;
             // TODO 9.1a)   Start ray tracing.
             //              Use the global variable maxRecursionDepth and a initial weight of 1.0.
-            //              pixelColor = traceRay(...);
-
+                pixelColor = traceRay(ray, 0, 1,0);
 
 
             if (pixelColor) pixelColors.push(pixelColor);
