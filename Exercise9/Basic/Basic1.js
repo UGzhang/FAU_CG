@@ -159,8 +159,12 @@ class Ray {
             case MaterialType.perfectMirror:
                 {
                     // TODO: Reflect the ray perfectly!
-                    // ...
-                    // return new Ray(intersection.point, reflectedDir, this.generation + 1);
+                    // http://cosinekitty.com/raytrace/chapter10_reflection.html - 10.5
+                    let incidentDir = vec2.fromValues(this.dir[0],this.dir[1]);
+                    let prep = 2.0 * vec2.dot(incidentDir, intersection.normal);
+                    let reflectedDr = vec2.create();
+                    reflectedDr = vec2.subtract(reflectedDr, incidentDir, (vec2.scale(vec2.create(), intersection.normal, prep)));
+                    return new Ray(intersection.point, reflectedDr, this.generation + 1);
 
                 }
                 break;
@@ -171,9 +175,15 @@ class Ray {
                     //       - To sample a direction in the hemisphere around the normal,
                     //         you can rotate the normal with a random angle between [-PI/2, +PI/2].
                     //         To do so you can use mat2.fromRotation(...) and vec2.transformMat2(...)!
-                    // ...
-                    // return new Ray(intersection.point, reflectedDir, this.generation + 1);
+                    
+                    let randomAngle = Math.random() * Math.PI - Math.PI / 2; // keep random angle between [-PI/2, +PI/2]
+                    let RotMatrix = mat2.create();
+                    mat2.fromRotation(RotMatrix, randomAngle);
+                    let normal = vec2.copy(vec2.create(), intersection.normal);
+                    vec2.transformMat2(normal, normal, RotMatrix);
+                    vec2.normalize(normal, normal);
 
+                    return new Ray(intersection.point, normal, this.generation + 1);
 
                 }
                 break;
