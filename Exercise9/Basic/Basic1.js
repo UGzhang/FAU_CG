@@ -272,9 +272,33 @@ class Line {
             //              e.g. result = new Intersection(t_intersect, this.material, this.normal(), intersectionPoint);!
             //              Only handle the case where you have a single intersection or no intersection (ray is not parallel to line).
             //              Also be sure to check whether the distance of the intersection lies between t_min and t_max.
+            
+            // https://stackoverflow.com/questions/53893292/how-to-calculate-ray-line-segment-intersection-preferably-in-opencv-and-get-its/53896859#53896859
+            let v1 = vec2.create();
+            vec2.subtract(v1, ray.p0, this.p0);
+            let v2 = vec2.create();
+            vec2.subtract(v2, this.p1, this.p0);
+            let v3 = vec2.fromValues(-ray.dir[1], ray.dir[0]);
 
+            let dot = vec2.dot(v2, v3);
+            if(Math.abs(dot) < 0.000001){
+                return result;
+            }
+            let t1 = vec2.cross(vec3.create(), v2, v1)[2] / dot; // distance
+            let t2 = vec2.dot(v1, v3) / dot;
 
+            if(t1 > ray.t_max || t1 < ray.t_min){
+                return result;
+            }
+            if(t2 < 0 || t2 > 1){
+                return result;
+            }
 
+            let scaleNum = vec2.create();
+            vec2.scale(scaleNum, ray.dir, t1);
+            let intersectionPoint = vec2.create();
+            vec2.add(intersectionPoint, ray.p0, scaleNum);
+            result = new Intersection(t1, this.material, this.normal(), intersectionPoint);
         }
 
         return result;
