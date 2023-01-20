@@ -137,6 +137,10 @@ void main() {
 	// Have a look at the definition of struct "Ray" in rt.h.
 	// Use "position" which is passed from the vertex shader.
     Ray primaryRay;
+    primaryRay.origin = cameraPos;
+    vec3 temp =  vec3(inverse(projView) * vec4(position,1));
+    temp = normalize(temp);
+    primaryRay.direction = normalize(temp - cameraPos);
     // Trace Primary Ray
     out_color = vec4(trace(primaryRay),1);
     return;
