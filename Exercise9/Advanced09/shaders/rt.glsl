@@ -72,17 +72,31 @@ int intersectRayScene(Ray ray, out IntersectionResult result)
         tmp = intersectRaySphere(ray, objectData[i]);
         // TODO:
         // Keep track of the closest intersection
+        if(tmp.isIntersection != false && tmp.tHit < tMin){
+            tMin = tmp.tHit;
+            if(i == 0) objectId = SPHERE_1;
+            if(i == 1) objectId = SPHERE_2;
+            if(i == 2) objectId = SPHERE_3;
+            if(i == 3) objectId = SPHERE_4;
+        }
     }
 
     tmp = intersectRayPlane(ray, objectData[PLANE]);
     // TODO:
     // Keep track of the closest intersection
+    if(tmp.isIntersection != false && tmp.tHit < tMin) {
+        tMin = tmp.tHit;
+        objectId = PLANE;
+    }
 
 
     tmp = intersectRaySpikeball(ray,objectData[SPIKEBALL]);
     // TODO:
     // Keep track of the closest intersection
-
+    if(tmp.isIntersection != false && tmp.tHit < tMin) {
+        tMin = tmp.tHit;
+        objectId = SPIKEBALL;
+    }
 
     //return object id of closest intersection (object ids defined at the beginning of the fragment shader)
     return objectId;
@@ -119,12 +133,25 @@ vec3 trace(Ray ray)
 	// The shininess exponent should be 40.
 	// Take the variable "sunIntensity" into account.
 	// Replace the following dummy line.
-	color = m.color;
+    vec3 amb = sunIntensity * 0.1 * m.color;
+    vec3 diff= sunIntensity * 1.0 * m.color * dot(inter.normal, -lightDir);
+    vec3 r = normalize(2 * dot(inter.normal,-lightDir) * inter.normal - (-lightDir));
+    vec3 v = -ray.direction;
+    vec3 spec = sunIntensity *1.0 * m.color * pow(dot(v, r),40);
 
     // TODO 9.2 f)
     // Compute shadowing coefficient of the current point.
     // Shoot a ray from the hitpoint towards the sun.
     // Use the uniform shadowFactor.
+    Ray shadowRay = Ray(inter.hitPosition, -lightDir);
+    IntersectionResult interShadow;
+    int shadowIntersect = intersectRayScene(shadowRay, interShadow);
+    if(shadowFactor == -1){
+        color = amb + diff + spec;
+    }else{
+        color = (1 - shadowFactor) * (amb + diff + spec);
+    }
+
 
     return color;
 }
