@@ -196,14 +196,62 @@ class Object2D {
 
         // 1. Compute the axis-aligned bounding box!
         //    Replace the following dummy line.
-        this.aabb = []; // should be in this format: [[min_x, min_y],[max_x, max_y]]
+        this.aabb = []; // should be in this format: 
+        let min_x = vec2.clone(primitives[0].p0)[0];
+        let min_y = vec2.clone(primitives[0].p0)[1];
+        let max_x = min_x;
+        let max_y = min_y;
 
+        for (let i = 1; i < this.primitives.length; ++i) {
+            let p0 = primitives[i].p0;
+            let p1 = primitives[i].p1;
+            
+            if(p0[0] < min_x){
+                min_x = p0[0];
+            }else if(p0[0] > max_x){
+                max_x = p0[0];
+            }
+
+            if(p0[1] < min_y){
+                min_y = p0[1];
+            }else if(p0[1] > max_y){
+                max_y = p0[1];
+            }
+
+            if(p1[0] < min_x){
+                min_x = p1[0];
+            }else if(p1[0] > max_x){
+                max_x = p1[0];
+            }
+
+            if(p1[1] < min_y){
+                min_y = p1[1];
+            }else if(p1[1] > max_y){
+                max_y = p1[1];
+            }
+        }
+
+        this.aabb = [[min_x, min_y],[max_x,max_y]]; //[[min_x, min_y],[max_x, max_y]]
 
         // 2. Compute the primitives to graphically represent the
         //    bounding box as "Line"s. Use the given color.
+        // p_0 __________ max
+        //     |        |
+        //     |        |
+        //     |        |
+        //     |        |
+        // min |________| p_1
+        //    
         let color = [0.1, 0.1, 0.1];
         this.aabb_primitives = [];
-
+        let p_0 = vec2.fromValues(min_x, max_y);
+        let p_1 = vec2.fromValues(max_x, min_y);
+        let min = vec2.fromValues(min_x, min_y);
+        let max = vec2.fromValues(max_x, max_y);
+        this.aabb_primitives.push(new Line(min, p_0, color));
+        this.aabb_primitives.push(new Line(p_0, max, color));
+        this.aabb_primitives.push(new Line(max, p_1, color));
+        this.aabb_primitives.push(new Line(p_1, min, color));
     }
 
     /**
