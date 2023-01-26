@@ -468,11 +468,23 @@ class KDTree {
                 //    in order to get a sorted copy of the objects in the node.
                 //    Use the objects' bounding boxes to choose the right split 
                 //    position!
+                let splitPosition;
                 if (node.splitAxis == 'x') {
-                    // ...
+                    let sorted = sort_along_x(node.children);
+                    let num = Math.floor(sorted.length / 2);
+                    let left = sorted[num-1].aabb[1][0];
+                    let right = sorted[num].aabb[0][0];
+                    splitPosition = (left+right) / 2;
                 } else {
-                    // ...
+                    let sorted = sort_along_y(node.children);
+                    let num = Math.floor(sorted.length / 2);
+                    let down = sorted[num-1].aabb[1][1];
+                    let up = sorted[num].aabb[0][1];
+                    splitPosition = (down+up) / 2;
                 }
+
+                node.splitPosition = splitPosition;
+                let sepPos = splitPosition;
 
                 // 2. Iterate over the objects in the node and assign them to
                 //    one of the two or even both arrays (via .push()), depending on their
@@ -483,9 +495,19 @@ class KDTree {
                 for (let i = 0; i < node.children.length; i++) {
                     let obj = node.children[i];
                     if (node.splitAxis == 'x') {
-                        // ...
+                        if (obj.aabb[0][0] <= splitPosition) {
+                            objectsLeft.push(obj);
+                        }
+                        if (obj.aabb[1][0] >= splitPosition) {
+                            objectsRight.push(obj);
+                        }
                     } else {
-                        // ...
+                        if (obj.aabb[0][1] <= splitPosition) {
+                            objectsLeft.push(obj);
+                        }
+                        if (obj.aabb[1][1] >= splitPosition) {
+                            objectsRight.push(obj);
+                        }
                     }
                 }
 
@@ -494,12 +516,25 @@ class KDTree {
                 //    the stack for further splitting.
                 let leftChild;
                 let rightChild;
+                // if (node.splitAxis == 'x') {
+                //     leftChild = new KdNode(false, [node.aabb[0], [sepPos, node.aabb[1][1]]], objectsLeft, 'y', sepPos);
+                //     rightChild = new KdNode(false, [[sepPos, node.aabb[1][1]], node.aabb[1]], objectsRight, 'y', sepPos);
+
+                // } else {
+                //     leftChild = new KdNode(false, [node.aabb[0], [node.aabb[1][0], sepPos]], objectsLeft, 'x', sepPos);
+                //     rightChild = new KdNode(false, [[node.aabb[1][0], sepPos], node.aabb[1]], objectsRight, 'x', sepPos);
+                // }
                 if (node.splitAxis == 'x') {
-                    // ...
+                    leftChild = new KdNode(false, [[node.aabb[0][0], node.aabb[0][1]], [sepPos, node.aabb[1][1]]], objectsLeft, 'y');
+                    rightChild = new KdNode(false, [[sepPos, node.aabb[0][1]], [node.aabb[1][0], node.aabb[1][1]]], objectsRight, 'y');
                 } else {
-                    // ...
+                    leftChild = new KdNode(false, [[node.aabb[0][0], node.aabb[0][1]], [node.aabb[1][0], sepPos]], objectsLeft, 'x');
+                    rightChild = new KdNode(false, [[node.aabb[0][0], sepPos], [node.aabb[1][0], node.aabb[1][1]]], objectsRight, 'x');
                 }
-                // ...
+
+                node.children = [leftChild, rightChild];
+                stack.push(leftChild);
+                stack.push(rightChild);
             }
         }
     }
