@@ -150,18 +150,22 @@ vec3 trace(Ray primaryRay)
 
     // TODO
     // Push primaryRay to stack
+    push(TraceNode(primaryRay, 1, 0));
 
     // Process all nodes on the stack
     while(stackSize > 0)
     {
         // TODO
         // Pop top node from stack
-        TraceNode node;
+        TraceNode node = pop();
 
         // TODO 10.2 a)
         // Already termination
         // - if intensity < INTENSITY_EPSILON
         // - if depth > maxDepth
+        if(node.intensity  < INTENSITY_EPSILON || node.depth > maxDepth){
+            continue;
+        }
 
         // Compute intersection of the current ray
         IntersectionResult inter;
