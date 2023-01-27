@@ -68,7 +68,12 @@ float fresnel(float n1, float n2, float cosThetaI)
     // TODO 10.2 b)
     // Compute the reflectance with the fresnel equation.
     // Handle total internal reflection!
-    return 1;
+    float q = 1 - (n1/n2 * pow((1 - pow(cosThetaI,2.0))),2);
+    if(q < 0) return 1;
+    float R_s = (n1*cosThetaI - n2*sqrt(q)) / (n1*cosThetaI+n2*sqrt(q));
+    float R_p = (n1*sqrt(q) - n2*cosThetaI) / (n1*sqrt(q)+n2*cosThetaI);
+
+    return 0.5*(R_s*R_s+R_p*R_p);
 }
 
 
