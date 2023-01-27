@@ -198,6 +198,16 @@ vec3 trace(Ray primaryRay)
         // - Compute cosTheta
         // - Check for an inner collision and handle it accordingly
         float cosTheta;
+        cosTheta = dot(-node.ray.direction, N);
+
+        if(cosTheta < 0){
+            float temp = n1;
+            n1 = n2;
+            n2 = temp;
+            N = -N;
+            cosTheta = dot(-node.ray.direction, N);
+        }
+
 
 
         // TODO 10.2 d)
