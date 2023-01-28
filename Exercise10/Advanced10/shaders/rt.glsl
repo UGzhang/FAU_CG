@@ -155,7 +155,7 @@ vec3 trace(Ray primaryRay)
 
     // TODO
     // Push primaryRay to stack
-    push(TraceNode(primaryRay, 1, 0));
+    push(TraceNode{primaryRay, 1, 0});
 
     // Process all nodes on the stack
     while(stackSize > 0)
@@ -206,6 +206,7 @@ vec3 trace(Ray primaryRay)
             n2 = temp;
             N = -N;
             cosTheta = dot(-node.ray.direction, N);
+            m.glass = 1.0;
         }
 
 
@@ -215,9 +216,10 @@ vec3 trace(Ray primaryRay)
         // Use the function "fresnel".
         // Note: The glass coefficient is stored in the material "m.glass"
 
-        float R = 0;
-        float T = 0;
-        float D = 1;
+        float FresnelResult = fresnel(n1, n2, cosTheta);
+        float R = node.intensity * FresnelResult;
+        float T = node.intensity * m.glass * (1 - FresnelResult);
+        float D = node.intensity * (1 - m.glass) * (1 - FresnelResult);
 
 
         // Debugging of the first tree layer
@@ -234,11 +236,15 @@ vec3 trace(Ray primaryRay)
         // TODO 10.2 e)
         // Compute reflected ray.
         // Create a "TraceNode" and push it on the stack
+        Ray reflectRay(inter.hitPosition + EPSILON * reflectedRay.direction, reflect(node.ray.direction, N));
+        push(TraceNode{reflectRay, R, node.depth+1});
 
         //======== Refraction ========
         // TODO 10.2 f)
         // Compute refracted ray.
         // Create a "TraceNode" and push it on the stack
+        Ray refractRay(inter.hitPosition + EPSILON * reflectedRay.direction,refract(node.ray.direction, N));
+        push(TraceNode{refractRay, T, node.depth+1});
 
         //======= Diffuse =======
         {
