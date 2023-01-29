@@ -1,4 +1,4 @@
-### About
+### Introduction
 This is the source code repository of Computer Graphics course at FAU in WS2022/23.
 
 ### Grade
@@ -12,7 +12,7 @@ This is the source code repository of Computer Graphics course at FAU in WS2022/
 | Ex6  | 10    | 6.5      | 
 | Ex7  | 10    | 8        | 
 | Ex8  | 10    |          | 
-| Ex9  | 10    |          | 
+| Ex9  | 10    | 5.5      | 
 | Ex10 |       |          | 
 
 ### Basic Exercise Mistake:  
