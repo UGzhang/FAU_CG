@@ -11,9 +11,9 @@ This is the source code repository of Computer Graphics course at FAU in WS2022/
 | Ex5  | 10    | 9        | 
 | Ex6  | 10    | 6.5      | 
 | Ex7  | 10    | 8        | 
-| Ex8  | 10    |          | 
+| Ex8  | 10    | 8        | 
 | Ex9  | 10    | 5.5      | 
-| Ex10 |       |          | 
+| Ex10 | 10    | 4.5      | 
 
 ### Basic Exercise Mistake:  
 1.1b: take care of the radius  
